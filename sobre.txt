@@ -1,0 +1,123 @@
+Principal mudança entre next 12 e next 13
+
+    Correr atrás do conceito de “Partial hydration” (hidratação parcial)
+        Dando exemplo do next, o conceito de server side rendering gerava as páginas pelo lado 
+        do servidor node (servidor node do next no caso), e devolvia o componente já criado para o cliente (navegador),
+        porém esse componente ele não é interativo, então tem que haver um processo de hidratação do javascript, 
+        que é pegar o js que serve para interações na tela, e jogar para o cliente.
+        
+        Ou seja, a quantidade de js que a gente precisa pra manter a tela interativa, continua ainda extremamente alto.
+
+        Então será que existe uma forma de eu diminuir isso, hidratando somente os componentes que utilizam realmente js
+        para interações, a resposta é sim, e essa é uma das mudanças do next 12 para o 13.
+
+    Criando projeto
+        npx create-next-app@latest next13
+            * escolhe a pasta app tbm (que no momento que fiz esse projeto tava como experimental ainda)
+        
+        bacana saber
+            instalar as configurações do eslint da rocket
+                * npm i @rocketseat/eslint-config -D
+                * dai depois de instalar é só ir no ./.eslint.json e adicionar, fica assim:
+                    "extends": ["next/core-web-vitals", "@rocketseat/eslint-config/react"]
+                * dai é só rodar um npx lint -- --fix
+    
+    Limpando o projeto
+        * tirar tudo que é css
+        * icones tbm
+    
+    Funcionamento da estrutura do projeto
+        * pasta app
+            * dentro desta pasta vai ter as paginas da nossa aplicação
+              tem um funcionamento muito semelhante a pasta pages
+              da antiga versão do next (next 12)
+            * tem uma diferença agr, para eu criar uma pagina agr
+              eu tenho que colocar o nome do arquivo de page.tsx
+              o next agr vai identificar como página.
+            * ex: quero criar uma pagina: http://localhost:3000/dashboard
+                * eu teria que criar uma pasta chamada "dashboard" (tudo minusculo)
+                  depois dentro dessa pasta, colocar um arquivo chamado: page.tsx
+                  (lembrando toda página agente retorna um componente como default,
+                  se for somente um componente agente retorna sem default)
+            
+            LAYOUT
+
+                * agr agente tem uma coisa legal no next 13 tbm, que é o layout
+                    * ele é simplesmente um componente que recebe um children e retorna qualquer coisa, porem o unico layout
+                    que tem que ter o retorno de html e body é o root layout:
+
+                        <html lang="en">
+                            <body>{children}</body>
+                            </html>
+                    ex: 
+                            export default function RootLayout({
+                                children,
+                                }: {
+                                children: React.ReactNode;
+                                }) {
+                                return (
+                                    <html lang="en">
+                                    <body>{children}</body>
+                                    </html>
+                                );
+                                }
+                    * cada página pode ter seu layout, o layout é um componente que vai renderizar sua página,
+                    e ele não recarrega quando vc muda de página,
+                    e qualquer coisa que vc coloca dentro dele, vai ser renderizado para a página que está com esse layout,
+                    
+                    * se eu quiser criar uma página de autenticaçãopor exemplo: assim: http://localhost:3000/auth/signIn
+                        é so criar uma pasta auth dentro dela colocar outra chamada signIn
+                        e dentro dessa pasta colcar um arquivo chamado page.tsx
+                    
+                    * caso eu não queira que essa rota: http://localhost:3000/auth/signIn, nao tenha o '/auth' no meio
+                        eu posso colocar a pasta 'auth' entre parenteses assim: (auth)
+
+            HEAD
+
+                * temos um arquivo chaamdo head tbm, e novamente, ele não precisa existir somente na raiz, pode ser colocado dentro
+                de qualquer pasta/páginas, assim como o layout
+                O head serve para customizar o head da página
+                
+            LOAD
+
+                * o next 13 tras um outro componente de loading, para as páginas, ex:
+                  toda vez que o usuário mude de página, a página vai precisar ser carregada,
+                  e nesse meio tempo vc pode colocar um loading
+                * basta vc criar um arquivo chamado loading.tsx dentro da pasta da pagina que vc quer que apareça o loading  
+                * veja na pagina de dashboard
+            
+            Rotas dinâmicas
+                * dentro de products/[id]/page.tsx
+                * veja la
+                * esse id agente vai receber na propria propriedade do componente
+            
+            Fetching de dados 
+                * o next 13 veio com uma nova forma de buscar os dados dentro de api e até banco de dados diretamente
+                * Agente agr pode fazer chamadas http dentro do nosso componente, apenas transformando ele em um
+                  componente assincrono
+                *  veja dentro da page Home
+                * chamadas http podem ser cahamadas dentro de componentes tbm, e não só apenas em páginas
+                * next consegue fazer as requisições em paralelo, ele ele mesmo identifica a ordem de precedência das mesmas
+            
+            Deduplicação automática
+                * evitar tudplicação de requisição http
+                * next13 ve se ta sendo feito requsiições iguais e ele mesmo não deixa isso acontecer
+            
+            Suspence api
+                * permite que a tela carregue, por mais que exista componentes que estão pendentes, ou seja, 
+                  demorando carregar, devido a alguma requisição.
+                * porque por padrão o next espera todos os componentes terminarem suas requisições, para entrão, construir os componentes,
+                  e só depois apresentar na tela.
+                * se agente tivesse um monte de componentes filhos em um página que precisasse fazer requisições, o next, por padrão
+                  ia esperar todos os compoinentes filhos fazerem suas requisições para entao apresentar a tela
+
+                * sendo assim a suspence api, agente coloca ela envolto dos componentes filhos para falar para o next carregar a página
+                  mesmo que eles nao estão construidos
+
+            Redirecionamente
+                * podem ser feitos pelo Link
+                * useRouter (no lado do client/ para componentes que nao são do servidor) (importação do useRouter)
+                * useRouter (lado do servidor) (importação do lado do servidor)
+                    * tem função de refresh par atualizar os dados
+                    * 
+                  
