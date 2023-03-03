@@ -3,7 +3,6 @@
 
 import Link from "next/link";
 
-import { Suspense } from "react";
 import { User } from "./components/User";
 
 //export const revalidate = 30;
@@ -16,19 +15,23 @@ import { User } from "./components/User";
 // force-cache => forçar que tal requisição seja cacheada, aramazeno de maneira global, sendo assim, todos os usuários
 //                  compartilham aquele cache.
 // no store => não quero armazenar isso em cache de maneira global para todos os usuários
+
 export const metadata = {
-  title: "home",
+  title: "Home",
 };
+
 export default async function Home() {
   return (
     <div>
       Home
       {/* TS nao tem suporte pra entender que componente pode ser assincrono */}
-      <Suspense fallback={<h3>Carregando informação do usuário</h3>}>
-        {/* @ts-expect-error Server-Component */}
-        <User />
-      </Suspense>
-      <Link href="dashboard">dash</Link>
+      <Link href="/users" prefetch={false}>
+        dash
+      </Link>
+      <br />
+      <Link href="/users" prefetch={false}>
+        users
+      </Link>
     </div>
   );
 }

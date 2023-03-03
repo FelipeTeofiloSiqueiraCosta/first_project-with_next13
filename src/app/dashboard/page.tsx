@@ -1,9 +1,5 @@
 import Link from "next/link";
 
-export const metadata = {
-  title: "Dash",
-};
-
 export default function Dashboard() {
   return (
     <>
